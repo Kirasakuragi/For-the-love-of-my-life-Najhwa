@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Surat Maaf – Abim untuk Najhwa</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Dancing+Script:wght@500;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --rose:  #e87c96;
+      --deep:  #c0405c;
+      --petal: #fde8ed;
+      --cream: #fff8f9;
+      --ink:   #5a1a2e;
+      --gold:  #d4a0a8;
+
+      --env-w: min(320px, 88vw);
+      --env-h: calc(var(--env-w) * 0.6875);
+      --flap-h: calc(var(--env-h) * 0.59);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { height: 100%; }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      background: var(--petal);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      overflow-x: hidden;
+      overflow-y: auto;
+      position: relative;
+      touch-action: manipulation;
+    }
+
+    /* ── Petal bg ── */
+    .petal-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .fp {
+      position: absolute;
+      border-radius: 50% 0 50% 0;
+      animation: fall linear infinite;
+      opacity: 0;
+    }
+    @keyframes fall {
+      0%   { transform: translateY(-60px) rotate(0deg); opacity: 0; }
+      10%  { opacity: 0.7; }
+      90%  { opacity: 0.5; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ── Flowers ── */
+    .flower-deco {
+      position: fixed; pointer-events: none; z-index: 1;
+      animation: floatSway 5s ease-in-out infinite;
+      user-select: none;
+    }
+    @keyframes floatSway {
+      0%,100% { transform: translateY(0) rotate(0deg); }
+      50%     { transform: translateY(-12px) rotate(8deg); }
+    }
+
+    /* ── Sparkles ── */
+    .sparkle {
+      position: fixed; pointer-events: none; z-index: 1;
+      border-radius: 50%;
+      background: var(--rose);
+      animation: twinkle 2.5s ease-in-out infinite;
+      opacity: 0;
+    }
+    @keyframes twinkle { 0%,100%{opacity:0;transform:scale(0)} 50%{opacity:1;transform:scale(1)} }
+
+    /* ── Main layout ── */
+    #scene {
+      position: relative; z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 60px 16px 80px;
+      gap: 0;
+    }
+
+    /* ── Envelope ── */
+    .envelope {
+      width: var(--env-w);
+      height: var(--env-h);
+      position: relative;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      filter: drop-shadow(0 16px 40px rgba(200,60,90,.25));
+      transition: transform .25s ease;
+      flex-shrink: 0;
+    }
+    @media (hover: hover) {
+      .envelope:hover { transform: translateY(-6px) scale(1.02); }
+    }
+    .envelope:active { transform: scale(0.97); }
+
+    .env-body {
+      width: 100%; height: 100%;
+      background: linear-gradient(145deg, #fce4ec, #f8bbd0);
+      border-radius: 6px 6px 14px 14px;
+      border: 2px solid var(--gold);
+      position: relative;
+      overflow: hidden;
+    }
+    .env-body::before {
+      content: '';
+      position: absolute; bottom: 0; left: 0;
+      border-style: solid;
+      border-width: var(--env-h) 0 0 calc(var(--env-w) / 2);
+      border-color: transparent transparent transparent #f6afc0;
+    }
+    .env-body::after {
+      content: '';
+      position: absolute; bottom: 0; right: 0;
+      border-style: solid;
+      border-width: var(--env-h) calc(var(--env-w) / 2) 0 0;
+      border-color: transparent #f6afc0 transparent transparent;
+    }
+    .env-bottom {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 50%;
+      background: linear-gradient(to top, #f8bbd0, #fce4ec);
+      clip-path: polygon(0 100%, 50% 0%, 100% 100%);
+    }
+
+    /* flap */
+    .env-flap {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: var(--flap-h);
+      background: linear-gradient(to bottom, #f48fb1, #f06292);
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      transform-origin: top center;
+      transition: transform .8s cubic-bezier(.4,0,.2,1);
+      z-index: 5;
+      border-radius: 6px 6px 0 0;
+    }
+    .envelope.open .env-flap { transform: rotateX(180deg); }
+
+    .flap-heart {
+      position: absolute; top: 20%; left: 50%;
+      transform: translateX(-50%);
+      font-size: clamp(20px, 6vw, 28px);
+      z-index: 6;
+      transition: opacity .4s;
+    }
+    .envelope.open .flap-heart { opacity: 0; }
+
+    /* hint */
+    .hint {
+      position: absolute;
+      bottom: clamp(-46px, -12vw, -36px);
+      width: 100%;
+      text-align: center;
+      font-family: 'Dancing Script', cursive;
+      color: var(--deep);
+      font-size: clamp(.82rem, 3.5vw, 1rem);
+      animation: pulse 1.6s ease-in-out infinite;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    @keyframes pulse { 0%,100%{opacity:.6} 50%{opacity:1} }
+
+    /* ── Letter card (flows BELOW envelope on mobile) ── */
+    .letter-card {
+      width: calc(var(--env-w) - 10px);
+      max-width: 340px;
+      margin-top: 32px;
+
+      /* hidden until opened */
+      opacity: 0;
+      transform: translateY(30px) scale(.96);
+      pointer-events: none;
+      transition: opacity .9s ease .5s, transform .9s cubic-bezier(.25,.8,.25,1) .5s;
+    }
+    .letter-card.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .letter {
+      background: var(--cream);
+      border: 1.5px solid var(--gold);
+      border-radius: 14px;
+      padding: clamp(18px, 5vw, 28px) clamp(16px, 5vw, 24px) clamp(16px, 4vw, 24px);
+      box-shadow: 0 8px 40px rgba(200,60,90,.18), inset 0 0 60px rgba(249,198,208,.2);
+      position: relative;
+      text-align: center;
+    }
+
+    .corner { position: absolute; font-size: clamp(13px, 4vw, 20px); line-height: 1; }
+    .corner.tl { top: 7px; left: 9px;  transform: rotate(-20deg); }
+    .corner.tr { top: 7px; right: 9px; transform: rotate(20deg); }
+    .corner.bl { bottom: 7px; left: 9px;  transform: rotate(20deg); }
+    .corner.br { bottom: 7px; right: 9px; transform: rotate(-20deg); }
+
+    .letter-title {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(1.05rem, 4.5vw, 1.35rem);
+      color: var(--deep);
+      margin-bottom: 8px;
+    }
+
+    .divider {
+      display: flex; align-items: center; gap: 8px;
+      margin: 6px auto 12px;
+      width: 80%;
+    }
+    .divider span { flex: 1; height: 1px; background: linear-gradient(to right, transparent, var(--gold)); }
+    .divider span:last-child { background: linear-gradient(to left, transparent, var(--gold)); }
+
+    .letter-body {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(.8rem, 3.2vw, .95rem);
+      line-height: 1.8;
+      color: var(--ink);
+      font-style: italic;
+    }
+
+    .highlight {
+      display: block;
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(.98rem, 4vw, 1.18rem);
+      font-style: normal;
+      color: var(--deep);
+      margin: 10px 0 2px;
+      line-height: 1.5;
+    }
+
+    .sign {
+      margin-top: 14px;
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(.92rem, 3.8vw, 1.1rem);
+      color: var(--rose);
+    }
+
+    .heart-row {
+      display: flex; justify-content: center; gap: 6px;
+      margin: 10px 0 6px;
+      font-size: clamp(13px, 4vw, 16px);
+    }
+    .heart-row span { animation: heartbeat 1.4s ease-in-out infinite; }
+    .heart-row span:nth-child(2) { animation-delay: .2s; }
+    .heart-row span:nth-child(3) { animation-delay: .4s; }
+    @keyframes heartbeat { 0%,100%{transform:scale(1)} 50%{transform:scale(1.3)} }
+  </style>
+</head>
+<body>
+
+<div class="petal-bg" id="petalBg"></div>
+
+<!-- Decorative flowers -->
+<div class="flower-deco" style="top:5%;left:3%;font-size:clamp(.9rem,4vw,2rem);animation-delay:0s">🌸</div>
+<div class="flower-deco" style="top:8%;right:4%;font-size:clamp(.8rem,3.5vw,1.5rem);animation-delay:.7s">🌺</div>
+<div class="flower-deco" style="bottom:10%;left:5%;font-size:clamp(.9rem,4vw,2rem);animation-delay:1.2s">🌷</div>
+<div class="flower-deco" style="bottom:7%;right:3%;font-size:clamp(.8rem,3.5vw,1.6rem);animation-delay:.4s">🌸</div>
+<div class="flower-deco" style="top:44%;left:1%;font-size:clamp(.8rem,3vw,1.3rem);animation-delay:.9s">🪷</div>
+<div class="flower-deco" style="top:44%;right:1%;font-size:clamp(.8rem,3vw,1.4rem);animation-delay:1.5s">🌺</div>
+<div class="flower-deco" style="top:22%;left:12%;font-size:clamp(.7rem,2.8vw,1.1rem);animation-delay:.3s">🌸</div>
+<div class="flower-deco" style="top:22%;right:12%;font-size:clamp(.7rem,2.8vw,1.1rem);animation-delay:1s">🌷</div>
+
+<div id="scene">
+  <!-- Envelope -->
+  <div class="envelope" id="envelope">
+    <div class="env-body">
+      <div class="env-bottom"></div>
+    </div>
+    <div class="env-flap"></div>
+    <div class="flap-heart">💌</div>
+    <div class="hint" id="hint">✨ Ketuk untuk membuka ✨</div>
+  </div>
+
+  <!-- Letter card – sits below envelope in normal flow -->
+  <div class="letter-card" id="letterCard">
+    <div class="letter">
+      <div class="corner tl">🌸</div>
+      <div class="corner tr">🌸</div>
+      <div class="corner bl">🌷</div>
+      <div class="corner br">🌷</div>
+
+      <div class="letter-title">~ Surat Dari Hati ~</div>
+
+      <div class="divider"><span></span>🌺<span></span></div>
+
+      <p class="letter-body">
+        Dengan segenap ketulusan hati yang paling dalam,
+        <br><br>
+        <span class="highlight">Saya Abim Chandra</span>
+        mengaku bersalah dan dengan rendah hati memohon permintaan maaf kepada
+        <span class="highlight">Tuan Putri Najhwa</span>
+      </p>
+
+      <div class="heart-row">
+        <span>💗</span><span>💗</span><span>💗</span>
+      </div>
+
+      <p class="letter-body">
+        Semoga pintu maafmu terbuka selebar samudra,<br>
+        seperti cintaku yang tak pernah padam untukmu.
+      </p>
+
+      <div class="sign">— Abim, dengan sepenuh cinta 🌹</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ── Falling petals ── */
+  const bg = document.getElementById('petalBg');
+  const isMobile = window.innerWidth < 600;
+  const petalCount = isMobile ? 16 : 28;
+
+  for (let i = 0; i < petalCount; i++) {
+    const p = document.createElement('div');
+    p.className = 'fp';
+    p.style.left   = Math.random() * 100 + 'vw';
+    p.style.width  = (10 + Math.random() * 10) + 'px';
+    p.style.height = (14 + Math.random() * 12) + 'px';
+    p.style.animationDuration = (7 + Math.random() * 10) + 's';
+    p.style.animationDelay   = (Math.random() * 14) + 's';
+    const hue = 340 + Math.random() * 30;
+    p.style.background = `radial-gradient(ellipse at 40% 30%, hsl(${hue},90%,80%), hsl(${hue},70%,65%))`;
+    p.style.borderRadius = Math.random() > .5 ? '50% 0 50% 0' : '0 50% 0 50%';
+    bg.appendChild(p);
+  }
+
+  /* ── Sparkles ── */
+  for (let i = 0; i < (isMobile ? 10 : 18); i++) {
+    const s = document.createElement('div');
+    s.className = 'sparkle';
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.top  = Math.random() * 100 + 'vh';
+    s.style.animationDuration = (1.5 + Math.random() * 2.5) + 's';
+    s.style.animationDelay   = (Math.random() * 3) + 's';
+    const sz = (4 + Math.random() * 5) + 'px';
+    s.style.width = s.style.height = sz;
+    document.body.appendChild(s);
+  }
+
+  /* ── Open envelope ── */
+  let opened = false;
+
+  function openEnvelope() {
+    if (opened) return;
+    opened = true;
+    document.getElementById('hint').style.display = 'none';
+    document.getElementById('envelope').classList.add('open');
+
+    // Show letter card below
+    setTimeout(() => {
+      const card = document.getElementById('letterCard');
+      card.classList.add('visible');
+      // Smooth scroll to letter
+      setTimeout(() => {
+        card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 200);
+    }, 600);
+
+    // Petal burst
+    for (let i = 0; i < (isMobile ? 8 : 12); i++) {
+      const burst = document.createElement('div');
+      burst.className = 'fp';
+      burst.style.left = (25 + Math.random() * 50) + 'vw';
+      burst.style.top  = '40vh';
+      burst.style.width  = (10 + Math.random() * 10) + 'px';
+      burst.style.height = (14 + Math.random() * 12) + 'px';
+      burst.style.animationDuration = (2 + Math.random() * 3) + 's';
+      burst.style.animationDelay   = (Math.random() * .4) + 's';
+      const hue = 340 + Math.random() * 30;
+      burst.style.background = `radial-gradient(ellipse at 40% 30%, hsl(${hue},90%,80%), hsl(${hue},70%,65%))`;
+      bg.appendChild(burst);
+      setTimeout(() => burst.remove(), 5500);
+    }
+  }
+
+  const env = document.getElementById('envelope');
+  env.addEventListener('click', openEnvelope);
+  env.addEventListener('touchend', function(e) {
+    e.preventDefault();
+    openEnvelope();
+  }, { passive: false });
+</script>
+</body>
+</html>
